@@ -29,3 +29,31 @@ To build a robust speech recognition system tailored for dysarthric speech by:
 - **Samples**: 770 total (77 samples for each digit from 0 to 9)
 - **Source**: Collected from dysarthric speakers
 - **Structure**:
+
+- data/raw/
+├── D0/
+├── D1/
+├── ...
+└── D9/
+
+
+Each folder contains 77 audio files for the corresponding digit label.
+
+---
+
+## 🔧 Features
+
+- MFCC (Mel Frequency Cepstral Coefficients) with 39 coefficients
+- Fixed length time padding (100 frames)
+- Label encoding using scikit-learn
+
+---
+
+## 🚀 Getting Started
+
+### 1. Clone this Repository
+
+```bash
+git clone https://github.com/SREshwarPrasad/projects.git
+cd projects/dysarthric_speech_recognition
+
