@@ -27,7 +27,7 @@ To build a robust speech recognition system tailored for dysarthric speech by:
 
 - **Type**: Audio `.wav` files
 - **Samples**: 770 total (77 samples for each digit from 0 to 9)
-- **Source**: Collected from dysarthric speakers
+- **Source**: Collected from dysarthric speakers (UASpeech - University of Illinois)
 - **Structure**:
 
 - data/raw/
