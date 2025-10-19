@@ -1,19 +1,20 @@
 import os
 import pickle
-from flask import Flask, render_template, request, jsonify
-
 import numpy as np
+from flask import Flask, render_template, request, jsonify
 
 app = Flask(__name__)
 
-# ---- CONFIG ----
-MODEL_PATH = os.environ.get("MODEL_PATH", "crop_yield_model.pkl")
-
-# Try to load model if present, otherwise warn
-model = None
+MODEL_PATH = "crop_yield_model.pkl"
 if os.path.exists(MODEL_PATH):
     with open(MODEL_PATH, "rb") as f:
         model = pickle.load(f)
+    MODEL_AVAILABLE = True
+else:
+    print("Model file not found. Running in demo mode.")
+    model = None
+    MODEL_AVAILABLE = False
+
 
 # Lists
 STATES = [
