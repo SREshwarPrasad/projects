@@ -1,0 +1,4 @@
+{
+  "seasons": { "Kharif": ["June-Oct"], "Rabi": ["Nov-Apr"], "Summer": ["Feb-May"] },
+  "crops": { "Rice": {}, "Wheat": {}, "Maize": {}, "Sugarcane": {} }
+}
