@@ -154,3 +154,15 @@ def download_report():
     if rpt_type == "docx":
         file
 
+@app.route("/save_prediction", methods=["POST"])
+def save_prediction():
+    if "username" not in session:
+        return jsonify({"error": "not_logged_in"}), 401
+    payload = request.get_json() or {}
+    # create a simple table 'predictions' in DB, or reuse login_history to store JSON
+    # Example: save into login_history as type 'prediction' (quick implementation)
+    username = session["username"]
+    pred = json.dumps(payload)
+    save_login_history(username, f"prediction:{pred}")
+    return jsonify({"status": "saved"})
+
