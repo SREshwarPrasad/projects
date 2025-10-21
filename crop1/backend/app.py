@@ -12,9 +12,15 @@ from flask import (
 from flask_session import Session
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from database import init_db, get_user, create_user, save_login_history, get_login_history, delete_login_entry, update_login_entry
-from report_generator import generate_report_pdf_bytes, generate_report_docx_bytes
-from model_integration import predict_yield_from_model
+from backend.database import (
+    init_db, get_user, create_user, save_login_history,
+    get_login_history, delete_login_entry, update_login_entry
+)
+from backend.report_generator import (
+    generate_report_pdf_bytes, generate_report_docx_bytes
+)
+from backend.model_integration import predict_yield_from_model
+
 
 # App setup
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -147,3 +153,4 @@ def download_report():
     # Create bytes for file and send
     if rpt_type == "docx":
         file
+
