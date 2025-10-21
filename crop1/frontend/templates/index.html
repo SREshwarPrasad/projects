@@ -1,49 +1,58 @@
 {% extends "base.html" %}
-{% block content %}
-<div class="form-container">
-  <h1>Crop Yield Prediction</h1>
-  <form id="predictionForm">
-    <div class="input-row">
-      <select id="state" required>
-        <option value="">Select a State</option>
-      </select>
-      <select id="district" required>
-        <option value="">Select District</option>
-      </select>
-    </div>
+{% block title %}Crop Yield Predictor{% endblock %}
+{% block body %}
+<div class="center-wrap">
+  <div class="card form-card">
+    <h1>Crop Yield Prediction</h1>
+    <p class="sub">Fill details and click Calculate</p>
 
-    <div class="input-row">
-      <select id="season" required>
-        <option value="">Select Season</option>
-        <option>Kharif</option>
-        <option>Rabi</option>
-        <option>Zaid</option>
-      </select>
-      <select id="crop" required>
-        <option value="">Select Crop</option>
-        <option>Rice</option>
-        <option>Wheat</option>
-        <option>Cotton</option>
-        <option>Sugarcane</option>
-      </select>
-    </div>
+    <form id="predictionForm" onsubmit="return false;">
+      <div class="row">
+        <div class="col">
+          <select id="state" required>
+            <option value="">Enter the state...</option>
+          </select>
+        </div>
+        <div class="col">
+          <select id="district" required>
+            <option value="">Enter the district...</option>
+          </select>
+        </div>
+      </div>
 
-    <div class="input-row">
-      <input type="number" id="area" placeholder="Enter land area (e.g. 2.5)" required>
-      <select id="area_unit">
-        <option value="hectares">Hectares</option>
-        <option value="acres">Acres</option>
-      </select>
-    </div>
+      <div class="row">
+        <div class="col">
+          <select id="season" required>
+            <option value="">Select season...</option>
+            <option value="Kharif">Kharif</option>
+            <option value="Rabi">Rabi</option>
+            <option value="Zaid">Zaid</option>
+          </select>
+        </div>
+        <div class="col">
+          <select id="crop" required>
+            <option value="">Select crop...</option>
+            <option>Rice</option><option>Wheat</option><option>Cotton</option><option>Sugarcane</option>
+          </select>
+        </div>
+      </div>
 
-    <div class="button-group">
-      <button type="button" id="predict">Calculate</button>
-      <button type="reset">Clear</button>
-      <button type="button" id="save">Save to history</button>
-    </div>
-  </form>
-  <div id="result"></div>
+      <div class="row">
+        <input type="number" id="area" placeholder="Enter land area (e.g. 2.5)" required>
+        <select id="area_unit">
+          <option value="hectares">Hectares</option>
+          <option value="acres">Acres</option>
+        </select>
+      </div>
+
+      <div class="row actions">
+        <button id="predict" class="btn primary">Calculate</button>
+        <button id="clear" class="btn secondary" type="reset">Clear</button>
+        <button id="save" class="btn tertiary">Save to History</button>
+      </div>
+
+      <div id="result" style="margin-top:16px;"></div>
+    </form>
+  </div>
 </div>
-<script src="{{ url_for('static', filename='js/main.js') }}"></script>
 {% endblock %}
-
