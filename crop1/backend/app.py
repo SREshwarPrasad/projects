@@ -171,17 +171,47 @@ def download_report():
         app.logger.exception("Failed to generate report")
         return jsonify({"error": "Report generation failed", "details": str(e)}), 500
 
-
+# ---------------- Save prediction ---------------- #
 @app.route("/save_prediction", methods=["POST"])
 def save_prediction():
     if "username" not in session:
         return jsonify({"error": "not_logged_in"}), 401
+
     payload = request.get_json() or {}
-    # create a simple table 'predictions' in DB, or reuse login_history to store JSON
-    # Example: save into login_history as type 'prediction' (quick implementation)
     username = session["username"]
-    pred = json.dumps(payload)
-    save_login_history(username, f"prediction:{pred}")
-    return jsonify({"status": "saved"})
+
+    try:
+        # Store in login_history for simplicity
+        save_login_history(username, f"prediction_saved:{json.dumps(payload)}")
+        return jsonify({"status": "saved"})
+    except Exception as e:
+        app.logger.exception("Failed to save prediction")
+        return jsonify({"error": "save_failed", "details": str(e)}), 500
+
+
+# ---------------- Show saved predictions ---------------- #
+@app.route("/predictions")
+def predictions():
+    if "username" not in session:
+        return redirect(url_for("login"))
+
+    username = session["username"]
+    history = get_login_history(username)
+
+    # Extract only the prediction entries
+    preds = []
+    for h in history:
+        msg = h["action"]
+        if msg.startswith("prediction_saved:"):
+            try:
+                data = json.loads(msg.split("prediction_saved:")[1])
+                data["timestamp"] = h["timestamp"]
+                preds.append(data)
+            except Exception:
+                continue
+
+    return render_template("predictions.html", username=username, predictions=preds)
+
+
 
 
