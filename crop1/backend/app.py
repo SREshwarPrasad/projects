@@ -138,8 +138,8 @@ def download_report():
     Expects JSON:
       {
         "report_type": "pdf" or "docx",
-        "language": "en",        # we are doing English-only for this deliverable
-        "data": { ... }         # prediction + user details
+        "language": "en",
+        "data": { ... }  # prediction + user details
       }
     Returns a file as attachment.
     """
@@ -150,9 +150,27 @@ def download_report():
 
     username = session.get("username", "guest")
     data["requested_by"] = username
-    # Create bytes for file and send
-    if rpt_type == "docx":
-        file
+
+    try:
+        if rpt_type == "docx":
+            file_bytes = generate_report_docx_bytes(data)
+            mime = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            filename = f"report_{username}.docx"
+        else:
+            file_bytes = generate_report_pdf_bytes(data)
+            mime = "application/pdf"
+            filename = f"report_{username}.pdf"
+
+        return send_file(
+            BytesIO(file_bytes),
+            mimetype=mime,
+            as_attachment=True,
+            download_name=filename
+        )
+    except Exception as e:
+        app.logger.exception("Failed to generate report")
+        return jsonify({"error": "Report generation failed", "details": str(e)}), 500
+
 
 @app.route("/save_prediction", methods=["POST"])
 def save_prediction():
@@ -165,4 +183,5 @@ def save_prediction():
     pred = json.dumps(payload)
     save_login_history(username, f"prediction:{pred}")
     return jsonify({"status": "saved"})
+
 
