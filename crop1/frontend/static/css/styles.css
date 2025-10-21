@@ -1,63 +1,120 @@
 body {
-  font-family: "Roboto", sans-serif;
-  background-color: #f6f8fa;
   margin: 0;
-  padding: 0;
-}
-
-.container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  font-family: 'Google Sans', 'Roboto', sans-serif;
+  background: linear-gradient(135deg, #f2f5ff, #dfe9f3);
   height: 100vh;
 }
 
-.card {
-  background: white;
-  padding: 2rem 3rem;
-  border-radius: 1rem;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  width: 420px;
+.background {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(135deg, #e3f2fd, #e8eaf6);
+  z-index: -1;
 }
 
-.card h2 {
+.main-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+/* Google-style Login/Register */
+.login-card {
+  background: #fff;
+  padding: 40px;
+  width: 360px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
   text-align: center;
-  color: #202124;
-  margin-bottom: 1.5rem;
 }
 
-input, select, button {
+.google-logo {
+  width: 80px;
+  margin-bottom: 20px;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border: 1px solid #dadce0;
+  border-radius: 6px;
+  outline: none;
+  font-size: 15px;
+}
+
+.input-group input:focus {
+  border-color: #1a73e8;
+  box-shadow: 0 0 2px #1a73e8;
+}
+
+.btn {
   width: 100%;
   padding: 10px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  margin: 8px 0;
-  font-size: 15px;
-  transition: border 0.2s ease;
-}
-
-input:focus, select:focus {
-  border-color: #4285f4;
-  outline: none;
-}
-
-button {
-  background-color: #4285f4;
-  color: white;
+  background-color: #1a73e8;
+  color: #fff;
   border: none;
+  border-radius: 6px;
   cursor: pointer;
-  font-weight: bold;
+  font-weight: 500;
+  margin-top: 10px;
 }
 
-button:hover {
-  background-color: #3367d6;
+.btn:hover {
+  background-color: #1765c0;
 }
 
-.form-inline {
+.footer {
+  margin-top: 15px;
+  font-size: 14px;
+}
+
+.footer a {
+  color: #1a73e8;
+  text-decoration: none;
+}
+
+.footer a:hover {
+  text-decoration: underline;
+}
+
+/* Google Form Style */
+.form-container {
+  background: #fff;
+  width: 600px;
+  border-radius: 12px;
+  padding: 30px 40px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.form-container h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.input-row {
   display: flex;
-  gap: 10px;
+  gap: 15px;
+  margin-bottom: 15px;
 }
 
-.form-inline input {
+.input-row input,
+.input-row select {
   flex: 1;
+  padding: 10px;
+  border: 1px solid #dadce0;
+  border-radius: 6px;
+}
+
+.button-group {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+#result {
+  text-align: center;
+  margin-top: 20px;
+  font-weight: 500;
 }
