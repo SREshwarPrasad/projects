@@ -2,52 +2,38 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>CropAssist - Crop Yield Predictor</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  <title>Crop Yield Predictor</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
   <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
 </head>
 <body>
-<header>
-  <h1>🌾 CropAssist</h1>
-  <nav>
-    <a href="/login">Login</a> | <a href="/register">Register</a>
-  </nav>
-</header>
+<div class="container">
+  <div class="card" style="width:600px;">
+    <h2>Crop Yield Prediction</h2>
+    <form id="predictForm">
+      <input type="text" id="state" placeholder="Enter the state..." list="stateList">
+      <input type="text" id="district" placeholder="Enter the district..." list="districtList">
 
-<section id="main-form">
-  <h2>Crop Yield Prediction</h2>
-  <form id="predictionForm">
-    <label for="state">State</label>
-    <select id="state" name="state" required></select>
+      <div class="form-inline">
+        <input type="number" id="area" placeholder="Land area">
+        <select id="unit">
+          <option value="hectares">Hectares</option>
+          <option value="acres">Acres</option>
+        </select>
+      </div>
 
-    <label for="district">District</label>
-    <select id="district" name="district" required></select>
+      <input type="text" id="crop" placeholder="Enter crop name...">
+      <input type="text" id="season" placeholder="Enter season...">
 
-    <label for="season">Season</label>
-    <select id="season" name="season" required></select>
+      <div class="form-inline">
+        <button type="button" id="calculateBtn">Calculate</button>
+        <button type="reset">Clear</button>
+        <button type="button" id="saveBtn">Save to History</button>
+      </div>
 
-    <label for="crop">Crop</label>
-    <select id="crop" name="crop" required></select>
-
-    <label for="area">Land Area</label>
-    <input type="number" id="area" name="area" step="0.01" placeholder="Enter area" required>
-
-    <label for="area_unit">Unit</label>
-    <select id="area_unit" name="area_unit">
-      <option value="hectares">Hectares</option>
-      <option value="acres">Acres</option>
-    </select>
-
-    <button type="submit">Calculate</button>
-  </form>
-
-  <div id="predictionResult"></div>
-  <button id="downloadPdf" class="hidden">Download PDF</button>
-  <button id="downloadDocx" class="hidden">Download DOCX</button>
-</section>
-
-<footer>
-  <p>© 2025 CropAssist — Simple, Reliable, Informative</p>
-</footer>
+      <p id="result" style="text-align:center; font-weight:bold; margin-top:10px;"></p>
+    </form>
+  </div>
+</div>
 </body>
 </html>
