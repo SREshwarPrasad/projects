@@ -78,13 +78,46 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  /* ----------------------------
-      3️⃣ Handle Save Button
-  ----------------------------- */
-  saveBtn?.addEventListener("click", () => {
-    // For now redirect to login/register if not logged in
-    window.location.href = "/login";
-  });
+/* ----------------------------
+    3️⃣ Handle Save Button (Smart Save + redirect)
+----------------------------- */
+saveBtn?.addEventListener("click", async () => {
+  const formData = {
+    state: stateSelect.value,
+    district: districtSelect.value,
+    season: seasonSelect.value,
+    crop: cropSelect.value,
+    area: areaInput.value,
+    area_unit: unitSelect.value,
+  };
+
+  try {
+    const res = await fetch("/save_prediction", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData),
+    });
+
+    if (res.status === 401) {
+      // Not logged in → redirect
+      window.location.href = "/login";
+      return;
+    }
+
+    const data = await res.json();
+    if (data.status === "saved") {
+      alert("✅ Prediction saved successfully!");
+      window.location.href = "/predictions";
+    } else {
+      alert("⚠️ Failed to save prediction.");
+    }
+  } catch (error) {
+    console.error("Save failed:", error);
+    alert("❌ Error while saving prediction.");
+  }
+});
+
+
 
   /* ----------------------------
       4️⃣ UI Quality Enhancements
@@ -95,3 +128,4 @@ document.addEventListener("DOMContentLoaded", function () {
     el.addEventListener("blur", () => (el.style.borderColor = "#dadce0"));
   });
 });
+
