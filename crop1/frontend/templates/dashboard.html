@@ -1,88 +1,48 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Dashboard - CropAssist</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-  <style>
-    body {
-      font-family: 'Roboto', Arial, sans-serif;
-      background-color: #f5f7fb;
-      margin: 0;
-      padding: 0;
-    }
-    .container {
-      max-width: 1000px;
-      margin: 50px auto;
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-      padding: 30px;
-    }
-    h2, h3 {
-      color: #1a73e8;
-      margin-bottom: 20px;
-    }
-    a.btn {
-      display: inline-block;
-      padding: 10px 20px;
-      background-color: #1a73e8;
-      color: #fff;
-      border-radius: 6px;
-      text-decoration: none;
-      transition: background-color 0.2s ease;
-    }
-    a.btn:hover {
-      background-color: #155bb5;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 15px;
-    }
-    table, th, td {
-      border: 1px solid #ddd;
-    }
-    th {
-      background-color: #f1f3f4;
-      color: #333;
-    }
-    th, td {
-      padding: 10px;
-      text-align: left;
-    }
-    .logout {
-      float: right;
-      color: #e53935;
-      font-weight: bold;
-      text-decoration: none;
-    }
-    .logout:hover {
-      text-decoration: underline;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-      <h2>Welcome, {{ username }}</h2>
-      <a href="/logout" class="logout">Logout</a>
-    </div>
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block body %}
+<header class="header">
+  <div class="logo">CropAssist</div>
+  <div class="header-right">
+    <span>Welcome, {{ username }}</span>
+    <a href="/logout" class="link-logout">Logout</a>
+  </div>
+</header>
 
-    <h3>Login / Activity History</h3>
+<div class="layout">
+  <aside class="sidebar">
+    <ul>
+      <li><a href="{{ url_for('index') }}">Predict</a></li>
+      <li><a href="{{ url_for('predictions') }}">Saved Predictions</a></li>
+    </ul>
+  </aside>
+
+  <main class="content">
+    <h2>My Saved Input History</h2>
     {% if history %}
-    <table>
-      <tr><th>ID</th><th>Action</th><th>Timestamp</th></tr>
-      {% for h in history %}
-      <tr>
-        <td>{{ h.id }}</td>
-        <td>{{ h.action }}</td>
-        <td>{{ h.timestamp }}</td>
-      </tr>
-      {% endfor %}
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>ID</th><th>Crop</th><th>State</th><th>District</th><th>Season</th><th>Area</th><th>Saved At</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for h in history %}
+        <tr>
+          <td>{{ h.id }}</td>
+          <td>{{ h.crop }}</td>
+          <td>{{ h.state }}</td>
+          <td>{{ h.district }}</td>
+          <td>{{ h.season }}</td>
+          <td>{{ h.area }} {{ h.area_unit }}</td>
+          <td>{{ h.timestamp }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
     </table>
     {% else %}
-    <p>No activity history found.</p>
+    <p>No saved history yet.</p>
     {% endif %}
-
-    <div style="margin-t
+  </main>
+</div>
+{% endblock %}
