@@ -16,11 +16,8 @@ from backend.database import (
     init_db, get_user, create_user, save_login_history,
     get_login_history, delete_login_entry, update_login_entry
 )
-from backend.report_generator import (
-    generate_report_pdf_bytes, generate_report_docx_bytes
-)
-from backend.model_integration import predict_yield_from_model
-
+from backend.report_generator import generate_report_pdf_bytes, generate_report_docx_bytes
+from backend.model_integration import predict_yield_from_model, model as default_model
 
 # App setup
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -34,26 +31,13 @@ Session(app)
 # Ensure DB exists
 init_db()
 
-# Load model (if available). Place your model file as backend/model.pkl
-MODEL_PATH = os.path.join(BASE_DIR, "model.pkl")
-model = None
-if os.path.exists(MODEL_PATH):
-    try:
-        with open(MODEL_PATH, "rb") as f:
-            model = pickle.load(f)
-            app.logger.info("Model loaded from %s", MODEL_PATH)
-    except Exception as e:
-        app.logger.warning("Failed to load model: %s", e)
-else:
-    app.logger.warning("No model.pkl found at %s; app will run in demo mode", MODEL_PATH)
+# Try to use default_model loaded in model_integration
+model = default_model
 
 # ---------- Routes ----------
-
 @app.route("/")
 def index():
-    # Serves the entry page (frontend/templates/index.html)
     return render_template("index.html")
-
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -69,7 +53,6 @@ def login():
         error = "Invalid credentials"
         flash(error, "danger")
     return render_template("login.html", error=error)
-
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -89,15 +72,32 @@ def register():
             return redirect(url_for("login"))
     return render_template("register.html", error=error)
 
-
 @app.route("/dashboard")
 def dashboard():
     if "username" not in session:
         return redirect(url_for("login"))
     username = session["username"]
     history = get_login_history(username)
-    return render_template("dashboard.html", username=username, history=history)
-
+    # Build history items: only include prediction_saved entries for the dashboard table
+    enriched = []
+    for h in history:
+        if h["action"].startswith("prediction_saved:"):
+            try:
+                payload = json.loads(h["action"].split("prediction_saved:")[1])
+            except Exception:
+                payload = {}
+            enriched.append({
+                "id": h["id"],
+                "username": h["username"],
+                "crop": payload.get("crop", ""),
+                "state": payload.get("state", ""),
+                "district": payload.get("district", ""),
+                "season": payload.get("season", ""),
+                "area": payload.get("area", ""),
+                "area_unit": payload.get("area_unit", ""),
+                "timestamp": h["timestamp"]
+            })
+    return render_template("dashboard.html", username=username, history=enriched)
 
 @app.route("/logout")
 def logout():
@@ -107,16 +107,9 @@ def logout():
         session.pop("username", None)
     return redirect(url_for("login"))
 
-
 @app.route("/predict", methods=["POST"])
 def predict():
-    """
-    Expects JSON with keys:
-    - state, district, season, crop, area, area_unit, additional numeric features...
-    The model integration function will decide which features to use.
-    """
     data = request.get_json() or {}
-    # ensure expected fields
     username = session.get("username", "guest")
     data["username"] = username
     data["timestamp"] = datetime.now().isoformat()
@@ -127,22 +120,11 @@ def predict():
         app.logger.exception("Prediction failed; returning demo output")
         prediction = {"yield_prediction": 0.0, "notes": f"demo fallback: {str(e)}"}
 
-    # Save login history entry for predict (optional)
     save_login_history(username, f"predicted:{data.get('crop','unknown')}")
     return jsonify(prediction)
 
-
 @app.route("/download_report", methods=["POST"])
 def download_report():
-    """
-    Expects JSON:
-      {
-        "report_type": "pdf" or "docx",
-        "language": "en",
-        "data": { ... }  # prediction + user details
-      }
-    Returns a file as attachment.
-    """
     payload = request.get_json() or {}
     rpt_type = payload.get("report_type", "pdf").lower()
     language = payload.get("language", "en")
@@ -181,13 +163,11 @@ def save_prediction():
     username = session["username"]
 
     try:
-        # Store in login_history for simplicity
         save_login_history(username, f"prediction_saved:{json.dumps(payload)}")
         return jsonify({"status": "saved"})
     except Exception as e:
         app.logger.exception("Failed to save prediction")
         return jsonify({"error": "save_failed", "details": str(e)}), 500
-
 
 # ---------------- Show saved predictions ---------------- #
 @app.route("/predictions")
@@ -198,7 +178,6 @@ def predictions():
     username = session["username"]
     history = get_login_history(username)
 
-    # Extract only the prediction entries
     preds = []
     for h in history:
         msg = h["action"]
@@ -212,6 +191,5 @@ def predictions():
 
     return render_template("predictions.html", username=username, predictions=preds)
 
-
-
-
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
