@@ -1,91 +1,85 @@
 # backend/database.py
-import sqlite3
 import os
+import sqlite3
 from datetime import datetime
 
-DB_PATH = os.path.join(os.path.dirname(__file__), "cropassist.db")
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_PATH = os.path.join(BASE_DIR, "app.db")
 
-def _get_conn():
+def get_conn():
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     return conn
 
 def init_db():
-    conn = _get_conn()
-    c = conn.cursor()
-    # Users table: username (PK), password (hashed), fullname, dob, created_at
-    c.execute("""
-        CREATE TABLE IF NOT EXISTS users (
-            username TEXT PRIMARY KEY,
-            password TEXT NOT NULL,
-            fullname TEXT,
-            dob TEXT,
-            created_at TEXT
-        )
-    """)
-    # Login history table
-    c.execute("""
-        CREATE TABLE IF NOT EXISTS login_history (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            username TEXT,
-            action TEXT,
-            timestamp TEXT
-        )
-    """)
+    if not os.path.exists(DB_PATH):
+        conn = get_conn()
+        cur = conn.cursor()
+        cur.execute("""
+            CREATE TABLE users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username TEXT UNIQUE,
+                password TEXT,
+                fullname TEXT,
+                dob TEXT,
+                created_at TEXT
+            )
+        """)
+        cur.execute("""
+            CREATE TABLE login_history (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username TEXT,
+                action TEXT,
+                timestamp TEXT
+            )
+        """)
+        conn.commit()
+        conn.close()
+
+def create_user(username, password_hash, fullname="", dob=""):
+    conn = get_conn()
+    cur = conn.cursor()
+    cur.execute("INSERT INTO users (username, password, fullname, dob, created_at) VALUES (?, ?, ?, ?, ?)",
+                (username, password_hash, fullname, dob, datetime.utcnow().isoformat()))
     conn.commit()
     conn.close()
 
 def get_user(username):
-    conn = _get_conn()
-    c = conn.cursor()
-    c.execute("SELECT username, password, fullname, dob FROM users WHERE username = ?", (username,))
-    row = c.fetchone()
+    conn = get_conn()
+    cur = conn.cursor()
+    cur.execute("SELECT username, password, fullname, dob FROM users WHERE username = ?", (username,))
+    row = cur.fetchone()
     conn.close()
     if row:
         return {"username": row["username"], "password": row["password"], "fullname": row["fullname"], "dob": row["dob"]}
     return None
 
-def create_user(username, hashed_password, fullname=None, dob=None):
-    conn = _get_conn()
-    c = conn.cursor()
-    c.execute("INSERT INTO users (username, password, fullname, dob, created_at) VALUES (?, ?, ?, ?, ?)",
-              (username, hashed_password, fullname, dob, datetime.now().isoformat()))
-    conn.commit()
-    conn.close()
-    return True
-
 def save_login_history(username, action):
-    conn = _get_conn()
-    c = conn.cursor()
-    c.execute("INSERT INTO login_history (username, action, timestamp) VALUES (?, ?, ?)",
-              (username, action, datetime.now().isoformat()))
+    conn = get_conn()
+    cur = conn.cursor()
+    cur.execute("INSERT INTO login_history (username, action, timestamp) VALUES (?, ?, ?)",
+                (username, action, datetime.utcnow().isoformat()))
     conn.commit()
     conn.close()
 
-def get_login_history(username, limit=200):
-    conn = _get_conn()
-    c = conn.cursor()
-    c.execute("SELECT id, action, timestamp FROM login_history WHERE username = ? ORDER BY id DESC LIMIT ?", (username, limit))
-    rows = c.fetchall()
+def get_login_history(username):
+    conn = get_conn()
+    cur = conn.cursor()
+    cur.execute("SELECT id, username, action, timestamp FROM login_history WHERE username = ? ORDER BY id DESC", (username,))
+    rows = cur.fetchall()
     conn.close()
-    return [{"id": r["id"], "action": r["action"], "timestamp": r["timestamp"]} for r in rows]
+    return [{"id": r["id"], "username": r["username"], "action": r["action"], "timestamp": r["timestamp"]} for r in rows]
 
 def delete_login_entry(entry_id):
-    if entry_id is None:
-        return False
-    conn = _get_conn()
-    c = conn.cursor()
-    c.execute("DELETE FROM login_history WHERE id = ?", (entry_id,))
+    conn = get_conn()
+    cur = conn.cursor()
+    cur.execute("DELETE FROM login_history WHERE id = ?", (entry_id,))
     conn.commit()
     conn.close()
-    return True
 
-def update_login_entry(entry_id, new_timestamp):
-    if entry_id is None or new_timestamp is None:
-        return False
-    conn = _get_conn()
-    c = conn.cursor()
-    c.execute("UPDATE login_history SET timestamp = ? WHERE id = ?", (new_timestamp, entry_id))
+def update_login_entry(entry_id, action):
+    conn = get_conn()
+    cur = conn.cursor()
+    cur.execute("UPDATE login_history SET action = ? WHERE id = ?", (action, entry_id))
     conn.commit()
     conn.close()
-    return True
