@@ -2,12 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>{% block title %}{% endblock %} - CropAssist</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/google_style.css') }}">
-  {% block extra_head %}{% endblock %}
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ title or "CropAssist" }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-  {% block content %}{% endblock %}
-  {% block scripts %}{% endblock %}
+  <div class="background"></div>
+  <div class="main-container">
+    {% block content %}{% endblock %}
+  </div>
 </body>
 </html>
