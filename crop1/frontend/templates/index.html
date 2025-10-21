@@ -1,39 +1,48 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Crop Yield Predictor</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-  <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
-</head>
-<body>
-<div class="container">
-  <div class="card" style="width:600px;">
-    <h2>Crop Yield Prediction</h2>
-    <form id="predictForm">
-      <input type="text" id="state" placeholder="Enter the state..." list="stateList">
-      <input type="text" id="district" placeholder="Enter the district..." list="districtList">
+{% extends "base.html" %}
+{% block content %}
+<div class="form-container">
+  <h1>Crop Yield Prediction</h1>
+  <form id="predictionForm">
+    <div class="input-row">
+      <select id="state" required>
+        <option value="">Select a State</option>
+      </select>
+      <select id="district" required>
+        <option value="">Select District</option>
+      </select>
+    </div>
 
-      <div class="form-inline">
-        <input type="number" id="area" placeholder="Land area">
-        <select id="unit">
-          <option value="hectares">Hectares</option>
-          <option value="acres">Acres</option>
-        </select>
-      </div>
+    <div class="input-row">
+      <select id="season" required>
+        <option value="">Select Season</option>
+        <option>Kharif</option>
+        <option>Rabi</option>
+        <option>Zaid</option>
+      </select>
+      <select id="crop" required>
+        <option value="">Select Crop</option>
+        <option>Rice</option>
+        <option>Wheat</option>
+        <option>Cotton</option>
+        <option>Sugarcane</option>
+      </select>
+    </div>
 
-      <input type="text" id="crop" placeholder="Enter crop name...">
-      <input type="text" id="season" placeholder="Enter season...">
+    <div class="input-row">
+      <input type="number" id="area" placeholder="Enter land area" required>
+      <select id="area_unit">
+        <option value="hectares">Hectares</option>
+        <option value="acres">Acres</option>
+      </select>
+    </div>
 
-      <div class="form-inline">
-        <button type="button" id="calculateBtn">Calculate</button>
-        <button type="reset">Clear</button>
-        <button type="button" id="saveBtn">Save to History</button>
-      </div>
-
-      <p id="result" style="text-align:center; font-weight:bold; margin-top:10px;"></p>
-    </form>
-  </div>
+    <div class="button-group">
+      <button type="button" id="predict">Calculate</button>
+      <button type="reset">Clear</button>
+      <button type="button" id="save">Save to history</button>
+    </div>
+  </form>
+  <div id="result"></div>
 </div>
-</body>
-</html>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% endblock %}
