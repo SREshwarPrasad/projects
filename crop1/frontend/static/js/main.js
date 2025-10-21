@@ -1,27 +1,31 @@
-document.addEventListener("DOMContentLoaded", function() {
-  const stateSelect = document.getElementById("state");
-  const districtSelect = document.getElementById("district");
+document.addEventListener("DOMContentLoaded", function () {
+  const predictBtn = document.getElementById("predict");
+  const saveBtn = document.getElementById("save");
+  const resultDiv = document.getElementById("result");
 
-  fetch("/static/data/states_districts.json")
-    .then(res => res.json())
-    .then(data => {
-      Object.keys(data).forEach(state => {
-        const opt = document.createElement("option");
-        opt.value = state;
-        opt.textContent = state;
-        stateSelect.appendChild(opt);
-      });
+  predictBtn?.addEventListener("click", async () => {
+    const data = {
+      state: document.getElementById("state").value,
+      district: document.getElementById("district").value,
+      season: document.getElementById("season").value,
+      crop: document.getElementById("crop").value,
+      area: document.getElementById("area").value,
+      area_unit: document.getElementById("area_unit").value,
+    };
 
-      stateSelect.addEventListener("change", function() {
-        const selectedState = this.value;
-        districtSelect.innerHTML = "";
-        const districts = data[selectedState] || [];
-        districts.forEach(d => {
-          const opt = document.createElement("option");
-          opt.value = d;
-          opt.textContent = d;
-          districtSelect.appendChild(opt);
-        });
-      });
+    resultDiv.innerHTML = "⏳ Calculating...";
+
+    const response = await fetch("/predict", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
     });
+
+    const result = await response.json();
+    resultDiv.innerHTML = `<b>Predicted Yield:</b> ${result.yield_prediction.toFixed(2)}`;
+  });
+
+  saveBtn?.addEventListener("click", () => {
+    window.location.href = "/login";
+  });
 });
