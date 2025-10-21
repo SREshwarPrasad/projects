@@ -8,124 +8,98 @@ document.addEventListener("DOMContentLoaded", function () {
   const predictBtn = document.getElementById("predict");
   const saveBtn = document.getElementById("save");
   const resultDiv = document.getElementById("result");
+  const clearBtn = document.getElementById("clear");
 
-  /* ----------------------------
-      1️⃣ Load states & districts
-  ----------------------------- */
+  // load states/districts
   fetch("/static/data/states_districts.json")
-    .then((res) => res.json())
-    .then((data) => {
-      Object.keys(data).forEach((state) => {
-        const opt = document.createElement("option");
-        opt.value = state;
-        opt.textContent = state;
-        stateSelect.appendChild(opt);
+    .then(res => res.json())
+    .then(data => {
+      const states = Object.keys(data).sort();
+      states.forEach(s => {
+        const o = document.createElement("option");
+        o.value = s; o.textContent = s; stateSelect.appendChild(o);
       });
-
       stateSelect.addEventListener("change", () => {
-        const selectedState = stateSelect.value;
-        districtSelect.innerHTML = '<option value="">Select District</option>';
-        if (data[selectedState]) {
-          data[selectedState].forEach((district) => {
-            const opt = document.createElement("option");
-            opt.value = district;
-            opt.textContent = district;
-            districtSelect.appendChild(opt);
-          });
-        }
+        const selected = stateSelect.value;
+        districtSelect.innerHTML = '<option value="">Enter the district...</option>';
+        (data[selected] || []).forEach(d => {
+          const o = document.createElement("option");
+          o.value = d; o.textContent = d; districtSelect.appendChild(o);
+        });
       });
-    })
-    .catch((err) => console.error("Failed to load state data:", err));
+    }).catch(err => console.error("Failed to load states:", err));
 
-  /* ----------------------------
-      2️⃣ Handle Calculate Button
-  ----------------------------- */
+  // calculate
   predictBtn?.addEventListener("click", async () => {
-    const formData = {
+    const payload = {
       state: stateSelect.value,
       district: districtSelect.value,
       season: seasonSelect.value,
       crop: cropSelect.value,
       area: areaInput.value,
-      area_unit: unitSelect.value,
+      area_unit: unitSelect.value
     };
-
-    // Basic form validation
-    if (!formData.state || !formData.district || !formData.season || !formData.crop || !formData.area) {
-      resultDiv.innerHTML = `<p class="error">⚠️ Please fill all fields before calculating.</p>`;
-      return;
+    if (!payload.state || !payload.district || !payload.crop || !payload.area) {
+      resultDiv.innerHTML = '<div class="error">Please fill all mandatory fields.</div>'; return;
     }
-
-    resultDiv.innerHTML = `<p>⏳ Calculating yield prediction...</p>`;
-
+    resultDiv.innerHTML = '⏳ Calculating...';
     try {
-      const response = await fetch("/predict", {
+      const res = await fetch("/predict", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify(payload)
       });
-
-      const result = await response.json();
-
-      resultDiv.innerHTML = `
-        <div class="result-card">
-          <h3>🌾 Predicted Yield</h3>
-          <p><strong>${result.yield_prediction.toFixed(2)}</strong> tons per ${formData.area_unit}</p>
-        </div>`;
-    } catch (error) {
-      console.error("Prediction error:", error);
-      resultDiv.innerHTML = `<p class="error">❌ Prediction failed. Try again later.</p>`;
+      const json = await res.json();
+      const v = (json.yield_prediction !== undefined) ? json.yield_prediction : (json.yield || 0);
+      resultDiv.innerHTML = `<div class="card"><h3>Predicted Yield</h3><p style="font-size:18px">${v} (units)</p></div>`;
+    } catch (e) {
+      console.error(e);
+      resultDiv.innerHTML = '<div class="error">Prediction failed. Try again later.</div>';
     }
   });
 
-/* ----------------------------
-    3️⃣ Handle Save Button (Smart Save + redirect)
------------------------------ */
-saveBtn?.addEventListener("click", async () => {
-  const formData = {
-    state: stateSelect.value,
-    district: districtSelect.value,
-    season: seasonSelect.value,
-    crop: cropSelect.value,
-    area: areaInput.value,
-    area_unit: unitSelect.value,
-  };
+  // clear behavior
+  clearBtn?.addEventListener("click", () => {
+    resultDiv.innerHTML = "";
+  });
 
-  try {
-    const res = await fetch("/save_prediction", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
-    });
-
-    if (res.status === 401) {
-      // Not logged in → redirect
-      window.location.href = "/login";
-      return;
+  // save behavior (smart)
+  saveBtn?.addEventListener("click", async () => {
+    const payload = {
+      state: stateSelect.value,
+      district: districtSelect.value,
+      season: seasonSelect.value,
+      crop: cropSelect.value,
+      area: areaInput.value,
+      area_unit: unitSelect.value
+    };
+    try {
+      const res = await fetch("/save_prediction", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(payload)
+      });
+      if (res.status === 401) {
+        // not logged in
+        window.location.href = "/login";
+        return;
+      }
+      const data = await res.json();
+      if (data.status === "saved") {
+        // redirect to predictions page
+        window.location.href = "/predictions";
+      } else {
+        alert("Save failed");
+      }
+    } catch (e) {
+      console.error("Save error", e);
+      alert("Save failed");
     }
+  });
 
-    const data = await res.json();
-    if (data.status === "saved") {
-      alert("✅ Prediction saved successfully!");
-      window.location.href = "/predictions";
-    } else {
-      alert("⚠️ Failed to save prediction.");
-    }
-  } catch (error) {
-    console.error("Save failed:", error);
-    alert("❌ Error while saving prediction.");
-  }
-});
-
-
-
-  /* ----------------------------
-      4️⃣ UI Quality Enhancements
-  ----------------------------- */
-  const inputs = document.querySelectorAll("input, select");
-  inputs.forEach((el) => {
-    el.addEventListener("focus", () => (el.style.borderColor = "#1a73e8"));
-    el.addEventListener("blur", () => (el.style.borderColor = "#dadce0"));
+  // small ui focus style
+  document.querySelectorAll("input, select").forEach(el => {
+    el.addEventListener("focus", () => el.style.borderColor = "#1a73e8");
+    el.addEventListener("blur", () => el.style.borderColor = "#e0e0e0");
   });
 });
-
