@@ -1,25 +1,21 @@
 {% extends "base.html" %}
-{% block content %}
-<div class="login-card">
-  <img src="{{ url_for('static', filename='images/google-logo.png') }}" class="google-logo">
-  <h2>Create your CropAssist Account</h2>
-  <form method="POST" action="/register">
-    <div class="input-group">
+{% block title %}Create account{% endblock %}
+{% block body %}
+<div class="center-wrap">
+  <div class="card login-card">
+    <img src="{{ url_for('static', filename='images/google-logo.png') }}" alt="logo" class="logo">
+    <h2>Create your CropAssist Account</h2>
+    <form method="POST" action="/register" class="form">
+      {% if error %}
+      <div class="error">{{ error }}</div>
+      {% endif %}
       <input type="text" name="fullname" placeholder="Full name" required>
-    </div>
-    <div class="input-group">
-      <input type="text" name="username" placeholder="Email or username" required>
-    </div>
-    <div class="input-group">
+      <input type="text" name="username" placeholder="Username (email-like)" required>
       <input type="date" name="dob" required>
-    </div>
-    <div class="input-group">
-      <input type="password" name="password" placeholder="Password" required>
-    </div>
-    <button type="submit" class="btn">Register</button>
-    <div class="footer">
-      <a href="/login">Already have an account?</a>
-    </div>
-  </form>
+      <input type="password" name="password" placeholder="Create a password" required minlength="8">
+      <button type="submit" class="primary">Next</button>
+    </form>
+    <div class="small">Already have an account? <a href="/login">Sign in</a></div>
+  </div>
 </div>
 {% endblock %}
