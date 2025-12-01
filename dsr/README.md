@@ -54,8 +54,5 @@ Example: F02_B1_D0_M4.wav
 
 
 
-The code: 
-
-The sample code that I have uploaded pass with an impressive accuracy of 91%.
-
-An example to test the model with the digit '4' has been implemented with text-to-speech design that utters the digit properly.
+*The 'bilstm_gru.ipynb' file code:* 
+The sample code that I have uploaded pass with an impressive accuracy of 91%. An example to test the model with the digit '4' has been implemented with text-to-speech design that utters the digit properly.
