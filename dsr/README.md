@@ -1,4 +1,4 @@
-DYSARTHRIC SPEECH RECOGNITION USING BiLSTM-GRU 
+DYSARTHRIC SPEECH RECOGNITION USING BiLSTM-GRU \n
 A lightweight model for Digit (0-9) Classification
 
 The project focuses on recognizing Dysarthric Speech Pattern that deploys BiLSTM-GRU Model and comparing it against Hidden Markov Model.
