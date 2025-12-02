@@ -10,10 +10,10 @@ contains image samples of the corresponding disease type. All algorithms are tra
 
 <h3> Algorithms: </h3>   
 
-i) SVM+PCA   
-ii) CNN  
-iii) KLDA  
-iv) Random Forest
+i) SVM+PCA (svmPca.ipynb)
+ii) CNN (cnn.ipynb)
+iii) KLDA (klda.ipynb)
+iv) Random Forest (rf.ipynb)
 
 <h3>Folder Structure:</h3>
 
