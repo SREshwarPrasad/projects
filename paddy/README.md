@@ -3,8 +3,12 @@ Paddy Disease Classification using ML and DL Techniques
 
 Algorithms used: 
 
-i) SVM+PCA  
-ii)
+i) SVM+PCA   
+ii) CNN  
+iii) KLDA  
+iv) Random Forest
+
+Folder Structure:
 
     paddydisease/
     ├── bacterial_leaf_blight/
@@ -25,8 +29,7 @@ ii)
     ├── balanced_coco/        # JSON export (COCO format)
     └── metadata.xlsx
 
-__*About:*__
-
+__*About:*__  
 This project focuses on Paddy Leaf Disease Classification using both Deep Learning 
 and Machine Learning techniques. The dataset consists of multiple disease categories 
 such as bacterial leaf blight, brown spot, blast, tungro, hispa, and more. Each folder 
