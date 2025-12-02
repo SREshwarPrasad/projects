@@ -79,7 +79,7 @@ F02   _   B1   _   D0   _   M4   .wav
   
   <tr>
     <td align ="center"> BiLSTM-GRU </td>
-    <td align ="center"> 91% </td>
+    <td align ="center"> 92% </td>
   </tr>
   
   <tr>
