@@ -1,8 +1,14 @@
 
-Paddy Disease Classification using ML and DL Techniques 
+<h4>Paddy Disease Classification using ML and DL Techniques <h4>
 
-Algorithms used: 
+__*About:*__  
+This project focuses on Paddy Leaf Disease Classification using both Deep Learning 
+and Machine Learning techniques. The dataset consists of multiple disease categories 
+such as bacterial leaf blight, brown spot, blast, tungro, hispa, and more. Each folder 
+contains image samples of the corresponding disease type.  
+All algorithms are trained on 450 images per disease.  
 
+__*Algorithms used:*__   
 i) SVM+PCA   
 ii) CNN  
 iii) KLDA  
@@ -28,17 +34,3 @@ Folder Structure:
     ├── yellow_stem_borer/
     ├── balanced_coco/        # JSON export (COCO format)
     └── metadata.xlsx
-
-__*About:*__  
-This project focuses on Paddy Leaf Disease Classification using both Deep Learning 
-and Machine Learning techniques. The dataset consists of multiple disease categories 
-such as bacterial leaf blight, brown spot, blast, tungro, hispa, and more. Each folder 
-contains image samples of the corresponding disease type.
-
-A CNN model is implemented for image-based deep learning classification, while traditional 
-ML models such as SVM-PCA, Random Forest, and K-LDA are also included for comparison. 
-The dataset is organized into separate folders for each disease class, along with a 
-balanced dataset and COCO-format annotations. The goal of this project is to provide 
-efficient models that can help identify rice plant diseases early using leaf images.
-
-    
