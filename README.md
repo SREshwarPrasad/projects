@@ -7,7 +7,12 @@
   </tr>
   <tr>
     <td align = "center"> Dysarthric Speech Recognition </td>
-    <td align = "center"> BiLSTM-GRU </td>
+    <td> 
+      <ul>
+        <li> BiLSTM-GRU </li>
+        <li> HMM </li>
+      </ul>
+    </td>
   </tr>
   <tr>
     <td align = "center"> Paddy Disease Classification </td>
